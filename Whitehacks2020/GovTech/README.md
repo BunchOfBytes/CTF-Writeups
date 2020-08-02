@@ -243,4 +243,53 @@ Please note that this is just a POC script. Don't expect it to create magic!
 From Chris Wang
 @chriswang-sectech
 ``````
-We can search for the user handle on GitHub
+We can search for the user handle on GitHub - leads us to this - https://github.com/chriswang-sectech/sectech-backup-scripts
+Particularly,
+``````
+# PLEASE USE YOUR ACCOUNT!
+ssh chrisw@sec-tech.cf -p 8822
+# Enter your password!
+``````
+In the Git commit history,
+``````
+## How To
+
+My account `chrisw`:`7cj5dvv4uhBRLIpMNPeT`
+``````
+We can login via SSH to the specified server to receive a custom-made shell with 4 commands
+``````
+======= HELP SECTION =======
+These are the following commands that can be used by this CustomShell
+  help
+  list
+  print
+  exit
+======= HELP SECTION =======
+``````
+We can do a bit of listing and printing of files and we encounter
+``````
+======= A VERY SIMPLE CUSTOM SHELL =======
+Type 'help' to get a list of allowed commands
+==========================================
+A very simple custom shell> list
+total 32
+drwxr-xr-x 1 chrisw chrisw 4096 Aug  1 08:31 .
+drwxr-xr-x 1 root   root   4096 Jul 21 06:18 ..
+drwxr-xr-x 1 root   root   4096 Jul 21 06:18 .aws
+-rw-r--r-- 1 chrisw chrisw  220 Apr  4  2018 .bash_logout
+-rw-r--r-- 1 chrisw chrisw 3771 Apr  4  2018 .bashrc
+drwx------ 2 chrisw chrisw 4096 Aug  1 08:31 .cache
+-rw-r--r-- 1 chrisw chrisw  807 Apr  4  2018 .profile
+A very simple custom shell> list .aws
+total 12
+drwxr-xr-x 1 root   root   4096 Jul 21 06:18 .
+drwxr-xr-x 1 chrisw chrisw 4096 Aug  1 08:31 ..
+-rw-rw-r-- 1 root   root    104 Jul 20 19:43 credentials
+A very simple custom shell> print .aws/credentials
+[default]
+aws_access_key_id = YOU_GOT_IT
+aws_secret_access_key = WH2020{CR3dent1als_FiL3_IS_ImPT0rt4nt}
+``````
+Flag: WH2020{CR3dent1als_FiL3_IS_ImPT0rt4nt}
+
+
