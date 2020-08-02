@@ -104,7 +104,7 @@ We can first decrypt the JWT at websites like jwt.io
 ``````
 HEADER:
 {
-  "typ": "JWT",e
+  "typ": "JWT",
   "alg": "HS256"
 }
 
