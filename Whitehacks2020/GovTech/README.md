@@ -142,4 +142,23 @@ Upgrade-Insecure-Requests: 1
 And we receive the flag!
 Flag: WH2020{Cook!3Ins3cur3Des3r!al!zat!on_Adm!nR!ghts}
 
+# GovTech SecTech (4/6) - XSS
+### Description
+Cross site scripting can come in many forms. In the worst case scenario, it may even allow admin credentials to be stolen. We understand the generation of transcript to be a privileged process in WhiteHacks SecTech. Is it truly secure? Try to print out some cookies!
+### Solution
+XSS vulnerabilities are pretty common in PDF generators which use HTML as input. They can be used to perform an SSRF on a target. This challenged involved the exploitation of 'wkhtmltopdf' a HTML to PDF generator
 
+We notice in Burp on the 'Generate Transcript' functionality 
+``````
+GET /transcript_write.php?user=temp_acc&password=temp_pass&user_id=1&file=transcript-pdf.html&script=js/remove-margins-before-printing.js HTTP/1.1
+Host: sec-tech.cf
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://sec-tech.cf/grades.php
+Connection: close
+Cookie: sectech=YToyOntzOjQ6InVzZXIiO3M6ODoidGVtcF9hY2MiO3M6NToiYWRtaW4iO2I6MTt9; PHPSESSID=eab13e70980504c609cf4b5b3b8764b8; user_id=c81e728d9d4c2f636f067f89cc14862c
+Upgrade-Insecure-Requests: 1
+``````
+There is a 'script' parameter being sent as input. We can include an attacker-controlled JavaScript file to be sent to the generator.
