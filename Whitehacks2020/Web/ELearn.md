@@ -40,7 +40,7 @@ Cookie: __cfduid=db55fdf3f4b3c7b3f017d3dc71893b0ab1596329705
 ``````
 We get our '500 INTERNAL SERVER ERROR' which means that this endpoint is probably SQLi vulnerable!
 
-There is a caveat to this however, you may notice that the standard 'OR 1=1-- will still give a '500 INTERNAL SERVER ERROR'. However, its because there's a caveat to this. The syntax for comments in MySQL is:
+There is a caveat to this however, you may notice that the standard 'OR 1=1-- will still give a '500 INTERNAL SERVER ERROR'. However, its because there's a caveat to this. The syntax for comments in MySQL databases
 ``````
 -- comment goes here
 `````` 
