@@ -89,7 +89,7 @@ This challenge involved setting the JWT headers to "alg" : "None", this meant th
 
 We can first retrieve our JWT token
 ``````
-GET /api/modules/search/e 'OR 1=1-- a HTTP/1.1
+GET /identity HTTP/1.1
 Host: chals.whitehacks.ctf.sg:5000
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
 Accept: application/json, text/plain, */*
