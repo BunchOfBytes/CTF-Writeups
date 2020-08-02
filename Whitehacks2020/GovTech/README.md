@@ -39,6 +39,8 @@ Let's visit that - http://sec-tech.cf/transcript.php?user=temp_acc&password=temp
 Flag:
 WH2020{Loc@l_F1l3_Inclus10n_buT_N0t_sh3ll}
 
+Note: Alternatively, we can use an SSRF (Part 5) using the file protocol - http://sec-tech.cf/rankings.php?ranking-url=file:///secret_path/lfi_flag.txt 
+
 # GovTech SecTech (2/6) - IDOR
 ### Description
 Insecure Direct Object Reference can have severe repercussions for applications. One mitigation technique is to avoid trusting user input. If you are tired, have some cookies with milk?
