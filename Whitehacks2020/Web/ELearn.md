@@ -74,3 +74,4 @@ Connection: close
 Access-Control-Allow-Origin: *
 [{"code": null, "name": "WH2020{0Ld_5ch00l_Sql1}"}]
 ``````
+Flag: WH2020{0Ld_5ch00l_Sql1}
