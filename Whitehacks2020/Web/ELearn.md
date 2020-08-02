@@ -7,6 +7,9 @@
 4. ???
 
 # Elearn (1/4) - SQLi?
+### Description
+Recently, WhiteHacks Academy has put in a lot of effort to upgrade its elearn portal to embrace the latest web technologies. One of the end result is a whole new React web application. Everything from the login, to the search filtering are all done under-the-hood without needing a page refresh. This seamless experience has led to the overconfidence of its management to thinking that by upgrading their web stack, they're no longer vulnerable to old school web vulnerabilities such as SQL injection. Prove them wrong.
+### Solution
 This is SQLi - but not the workshop SQLi. You see, there are many different types of SQL databases out there, each comes with their own syntax.
 
 This is a React App. Hence, we should use Burp even more to enumerate all those pesky endpoints which are hidden away from us. :3
@@ -75,3 +78,8 @@ Access-Control-Allow-Origin: *
 [{"code": null, "name": "WH2020{0Ld_5ch00l_Sql1}"}]
 ``````
 Flag: WH2020{0Ld_5ch00l_Sql1}
+
+# Elearn (2/4) - JWT
+JWT is being used alot more in applications lately. Lately, there was a guy who received $100,000 bounty from Apple for a JWT vulnerability (damn!) - https://bhavukjain.com/blog/2020/05/30/zeroday-signin-with-apple/
+
+This challenge involved setting the JWT headers to "alg" : "None", this meant that the signature portion of the JWT will be redundant as there is no signature for the server to check with. If the server does not verify the JWT algorithm, we can spoof the JWT token and escalate our privileges to any user!
