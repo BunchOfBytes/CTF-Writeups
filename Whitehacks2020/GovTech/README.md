@@ -216,5 +216,31 @@ WH2020{EC2UserData-SSRF}
 ``````
 Flag: WH2020{EC2UserData-SSRF} 
 
+# GovTech SecTech (6/6) - OSINT
+### Description
+We love how the system archives past student records - after all, data is gold. If you don't find the gold, we suggest you dig deeper and look beyond the surface, specifically the 'root' :)
+### Solution 
+The challenge hints to take a look at the past student records functionality. If we use 'Inspect Element' to see where the PDF files came from. We notice that it is stored in a AWS S3 bucket
+``````
+Excerpt from 'Inspect Element'
+<a href="https://sectech-archived-student-records.s3-ap-southeast-1.amazonaws.com/fy2019-20.csv">FY2019-20</a>
+``````
+The challenge also hints on 'root' - webroot? Let's find out by visiting - https://sectech-archived-student-records.s3-ap-southeast-1.amazonaws.com/
+
+We come accross a XML file containing a directory listing. A file stands out - backup-notes.txt
+
+Visiting it -
+``````
+To all staff,
+
+In light, of the latest randomware attacks. We need to conduct regular backups. 
+While the automated solution is currently a Work-In-Progress, please use the backup script to run the backup task whenever you need to.
+I uploaded my script in Github. The Github link has been sent to you guys via the intranet email system. Please refer to that link to get the source code to run the backup.
+
+Please note that this is just a POC script. Don't expect it to create magic!
 
 
+From Chris Wang
+@chriswang-sectech
+``````
+We can search for the user handle on GitHub
