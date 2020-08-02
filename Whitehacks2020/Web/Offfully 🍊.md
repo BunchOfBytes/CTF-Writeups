@@ -1,9 +1,11 @@
 # Offfully 🍊
 ### Summary 
-Misconfigure NGINX server -> Flag
+Misconfigured NGINX server allows for path traversal -> Flag
 
 ### Solution
-We are given a configuration file for NGINX
+We are given a configuration file for NGINX and a web server to pwn.
+
+``````
 server {
         listen 80 default_server;
         listen [::]:80 default_server;
@@ -23,3 +25,10 @@ server {
                 alias /var/www/html/images/;
         }
 }
+``````
+
+When we visit /flag.txt we get a 403 Forbidden error. However, when we visit /images we get pointed to /var/www/html/images/ part of the directory. According to this post https://www.acunetix.com/vulnerabilities/web/path-traversal-via-misconfigured-nginx-alias/
+
+That means that when I visit /images../flag.txt, it translates to /var/www/html/images/../flag.txt. This will give us a flag.txt
+
+Flag: WH2020{0FF_BY_TW0_D0Ts_AND_A_SLASH}
